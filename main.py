@@ -36,7 +36,7 @@ def read_root():
 
 
 @app.get("/getuser/{userid}", response_model = User)
-def read_item(item_id: int, q: Union[str, None] = None):
+def read_item(userid: int, q: Union[str, None] = None):
     return {"user": "test"}
 
 
