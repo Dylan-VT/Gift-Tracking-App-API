@@ -32,7 +32,7 @@ app = FastAPI()
 
 @app.get("/")
 def read_root():
-    return {"Hello": "World"}
+    return {"Hello": "Traveler"}
 
 
 @app.get("/getuser/{userid}", response_model = User)
