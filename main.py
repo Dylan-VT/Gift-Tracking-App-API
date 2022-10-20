@@ -1,21 +1,23 @@
-import dis
-from typing import Optional, Union
-from click import echo
+from cgitb import reset
+from typing import Union
+from unittest import result
 from fastapi import FastAPI
-from pydantic import BaseModel
-from typing import List
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 import os
 from dotenv import load_dotenv
+from models import user_models
+from metadata import users
 import sqlalchemy
+
+
 #load in db connection string
 load_dotenv()
 
 
 #create engine
 
-engine = sqlalchemy.create_engine(os.environ['DB_URL'], echo = True)
+engine = sqlalchemy.create_engine(os.environ['DB_URL'])
 
 
 app = FastAPI()
@@ -32,12 +34,7 @@ app.add_middleware(
 )
 
 
-class User(BaseModel):
-    user_id: int
-    username: str
-    display_name: str
-    birthday: str
-    friends: Optional[List[str]]
+
 
 app = FastAPI()
 
@@ -46,31 +43,44 @@ app = FastAPI()
 
 @app.get("/")
 def read_root():
-    #connect to db
-    with engine.connect() as conn:
-        result = conn.execute(sqlalchemy.text('SELECT * FROM public.users;'))
-        for r in result:
-            print(r)   
-    return {"Hi": "Bye"}
+    return {"Hello": "World"}
 
 
 @app.get("/getuser/{username}")
 def read_item(username: str, q: Union[str, None] = None):
-    #connect to db
-    with engine.connect() as conn:
-        #execute query
-        result = conn.execute(sqlalchemy.text(f'SELECT username, user_id, display_name, birthday, friends FROM public.users WHERE "username" = \'{username}\';'))
-        r = result.fetchone()
-        
-        #verify r exists
-        if not r:
-            return 501
-        
-        found_user = User(user_id = r[1], username = r[0], display_name = r[2], birthday = str(r[3]), friends = r[4])
-        
-        return found_user
+    #create select statement
+    select = users.select().where(users.c.username == username)
+    #get result, fetch first item
+    result = make_simple_query(select, engine).fetchone()
+    if result is None:
+        print("Error fetching user")
+        return 500
     
+    return result
+    
+@app.post("/createuser")
+def create_item(user: user_models.CreateUser):
+    #insert statement to create new user
+    insert = users.insert().values(username = user.username, display_name = user.display_name, birthday = user.birthday)
+    #make query
+    try:
+        result = make_simple_query(insert, engine)
+    except:
+        print("Exception encountered at /createuser")
+        return 500
+    
+    return 200
 
+
+#simple function that takes a sql statement and engine and returns the result of the query
+def make_simple_query(sql_statement, engine):
+    #open connection
+    with engine.connect() as conn:
+        #make query
+        result = conn.execute(sql_statement)
+        return result
+
+        
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
