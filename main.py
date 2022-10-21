@@ -66,7 +66,7 @@ def read_item(username: str):
     return result
 
 @app.post("/createuser")
-def create_item(user: user_models.CreateUser):
+def create_user(user: user_models.CreateUser):
     """
     Creates a new user and adds them to the DB
     """
@@ -83,7 +83,33 @@ def create_item(user: user_models.CreateUser):
 
     return 200
 
+@app.post("/addfriend")
+def add_friend(req: user_models.AddFriend):
+    '''
+    query to create a new friend, takes the username of the original friend
+    and the new friend to add
+    '''
 
+    #first verify friend is exists
+    select = users.select().where(
+                            users.c.username == req.new_friend)
+
+    new_friend_result = make_simple_query(select, engine).fetchone()
+
+    #return 201 if no friend
+    if new_friend_result is None:
+        print("Couldn't find new friend")
+        return 201
+
+    #now update
+    update = users.c.friends.append(new_friend_result.user_id)  # type: ignore
+
+    result = make_simple_query(update, engine)
+
+    print(result)
+
+
+    return 400
 
 def make_simple_query(sql_statement, _e):
     """

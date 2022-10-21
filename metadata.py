@@ -1,9 +1,9 @@
-#created 10/20 by Dylan Lawrence
-#This document will hold all of the table schemas, making queries safer and easier
+'''
+created 10/20 by Dylan Lawrence
+This document will hold all of the table schemas, making queries safer and easier
+'''
 
-from typing import List
 from sqlalchemy import Date, Table, Column, Integer, String, MetaData, ARRAY
-from sqlalchemy.dialects.postgresql import array
 
 
 metadata_obj = MetaData()
