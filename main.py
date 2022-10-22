@@ -50,7 +50,7 @@ def read_root():
     return {"Hello": "World"}
 
 
-@app.get("/getuser/{username}")
+@app.get("/getuser/{username}", response_model = user_models.User)
 def read_item(username: str):
     """
     Gets a user from the db that matches the username
@@ -59,6 +59,7 @@ def read_item(username: str):
     select = users.select().where(users.c.username == username)
     #get result, fetch first item
     result = make_simple_query(select, engine).fetchone()
+
     if result is None:
         print("Error fetching user")
         return 500
