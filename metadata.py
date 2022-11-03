@@ -14,5 +14,5 @@ users = Table(
     Column("username", String),
     Column("display_name", String),
     Column("birthday", Date),
-    Column("friends", ARRAY(Integer))
+    Column("friends", ARRAY(Integer()))
 )

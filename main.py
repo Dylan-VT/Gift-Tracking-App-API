@@ -3,6 +3,7 @@ root file for gift tracker api
 will pull together end points and models
 """
 import os
+from typing import List
 import psycopg2
 import uvicorn
 import sqlalchemy
@@ -49,6 +50,16 @@ def read_root():
     """
     return {"Hello": "World"}
 
+@app.get("/getallusers", response_model = List[user_models.User])
+def get_all_users():
+    """
+    Temporary helper end point to retrieve all users
+    """
+    select = users.select()
+    
+    result = make_simple_query(select, engine).fetchall()
+    
+    return result
 
 @app.get("/getuser/{username}", response_model = user_models.User)
 def read_item(username: str):
@@ -90,7 +101,10 @@ def add_friend(req: user_models.AddFriend):
     query to create a new friend, takes the username of the original friend
     and the new friend to add
     '''
-
+    #users cannot add themselves as friends
+    if req.username == req.new_friend:
+        return 501
+    
     #first verify friend is exists
     select = users.select().where(
                             users.c.username == req.new_friend)
@@ -100,15 +114,36 @@ def add_friend(req: user_models.AddFriend):
     #return 201 if no friend
     if new_friend_result is None:
         print("Couldn't find new friend")
-        return 201
+        return 502
+    
+    #get original users friends
+    select = users.select().where(
+                            users.c.username == req.username
+    )
+    
+    original_user_friends = make_simple_query(select, engine).fetchone().friends
+    
+    #if no friends found or friend in list return a 5xx
+    if original_user_friends is None:
+        return 503
+    
+    if req.new_friend in original_user_friends:
+        return 504
+    
+    #update original users friends
+    original_user_friends.append(new_friend_result.user_id)
+    print(original_user_friends)
+    
+    #now update in db
 
-    #now update
-    update = users.c.friends.append(new_friend_result.user_id)  # type: ignore
+    update = users.update().where(
+        users.c.username == req.username 
+    ).values(
+        {"friends": original_user_friends}
+    )
+    
 
-    result = make_simple_query(update, engine)
-
-    print(result)
-
+    make_simple_query(update, engine)
 
     return 400
 
