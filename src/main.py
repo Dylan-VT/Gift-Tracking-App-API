@@ -4,7 +4,6 @@ will pull together end points and models
 """
 import os
 import sys
-print(sys.path)
 from typing import List
 import psycopg2
 import uvicorn
@@ -20,7 +19,10 @@ from models import user_models, event_models
 from requests.event_requests import get_events, add_event
 
 
+#append folder paths
+sys.path.append(sys.path[0] + '/requests')
 
+print(sys.path)
 #load in db connection string
 load_dotenv()
 
