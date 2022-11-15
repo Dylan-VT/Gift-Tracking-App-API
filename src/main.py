@@ -7,7 +7,6 @@ from typing import List
 import psycopg2
 import uvicorn
 import sqlalchemy
-
 from fastapi.middleware.cors import CORSMiddleware
 from request_functions.event_requests import get_events, add_event
 
