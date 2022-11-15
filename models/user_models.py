@@ -33,3 +33,4 @@ class AddFriend(BaseModel):
     '''
     username: str
     new_friend: str
+

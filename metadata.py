@@ -16,3 +16,13 @@ users = Table(
     Column("birthday", Date),
     Column("friends", ARRAY(Integer()))
 )
+
+events = Table(
+    "events",
+    metadata_obj,
+    Column('owner', Integer, primary_key=True),
+    Column('event_for', Integer),
+    Column('event_name', String),
+    Column('event_description', String, nullable = True),
+    Column('event_date', Date)
+)
