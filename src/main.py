@@ -4,7 +4,7 @@ will pull together end points and models
 """
 import os
 import sys
-sys.path.append(sys.path[0] + '/requests')
+sys.path.append('../')
 
 print(sys.path)
 from typing import List
