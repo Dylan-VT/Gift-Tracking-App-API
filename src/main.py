@@ -3,23 +3,23 @@ root file for gift tracker api
 will pull together end points and models
 """
 import os
-import sys
-sys.path.append('../')
-
-print(sys.path)
 from typing import List
 import psycopg2
 import uvicorn
 import sqlalchemy
-from fastapi import FastAPI
+
 from fastapi.middleware.cors import CORSMiddleware
+from request_functions.event_requests import get_events, add_event
+
+from fastapi import FastAPI
+
 from dotenv import load_dotenv
 
 #custom modules
-from utils.sql_utils import make_simple_query
-from utils.metadata import users
+from db_utils.sql_utils import make_simple_query
+from db_utils.metadata import users
 from models import user_models, event_models
-from requests.event_requests import get_events, add_event
+
 
 
 #append folder paths
