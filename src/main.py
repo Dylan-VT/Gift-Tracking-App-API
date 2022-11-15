@@ -3,6 +3,8 @@ root file for gift tracker api
 will pull together end points and models
 """
 import os
+import sys
+print(sys.path)
 from typing import List
 import psycopg2
 import uvicorn
