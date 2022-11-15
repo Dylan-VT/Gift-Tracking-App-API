@@ -17,7 +17,7 @@ from dotenv import load_dotenv
 #custom modules
 from db_utils.sql_utils import make_simple_query
 from db_utils.metadata import users
-from models import user_models, event_models
+from class_models import user_models, event_models
 
 
 

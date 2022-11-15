@@ -3,9 +3,9 @@ File to hold all of the functions for event requests
 """
 from fastapi import HTTPException
 
-from utils.metadata import events, users
-from utils.sql_utils import make_simple_query
-from models import event_models
+from db_utils.metadata import events, users
+from db_utils.sql_utils import make_simple_query
+from class_models import event_models
 
 
 
