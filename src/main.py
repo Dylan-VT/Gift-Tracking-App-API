@@ -105,7 +105,7 @@ def add_friend_endpoint(req: user_models.AddFriend):
     '''
     return user_requests.add_friend(req, engine)
 
-@app.get('/getevents/{users_list}', response_model=List[event_models.Event])
+@app.get('/getevents/{users_list}')#, response_model=List[event_models.Event])
 def get_events_endpoint(users_list: str):
     """
     endpoint to get events

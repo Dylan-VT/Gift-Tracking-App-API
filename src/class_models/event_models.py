@@ -11,7 +11,6 @@ class Event(BaseModel):
     """
     Base class to store an event
     """
-    owner: int
     event_for: int
     event_name: str
     event_description: Optional[str]

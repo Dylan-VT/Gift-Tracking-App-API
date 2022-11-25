@@ -2,7 +2,7 @@
 File to hold all of the functions for event requests
 """
 from fastapi import HTTPException
-
+import sqlalchemy as db
 from db_utils.metadata import events, users
 from db_utils.sql_utils import make_simple_query
 from class_models import event_models
@@ -13,14 +13,8 @@ def add_event(new_event: event_models.Event, engine):
     """
     Adds event to database
     """
-    #first verify owner and user the event is for exist
-    select = users.select().where(users.c.user_id == new_event.owner)
-    owner = make_simple_query(select, engine).fetchone()
-    if owner is None:
-        print("Error: Could not find event owner")
-        return 401
 
-    #repeat for user
+    #verify user exists
     select = users.select().where(users.c.user_id == new_event.event_for)
     owner = make_simple_query(select, engine).fetchone()
     if owner is None:
@@ -35,7 +29,6 @@ def add_event(new_event: event_models.Event, engine):
 
     try:
         insert = events.insert().values(
-            owner = new_event.owner,
             event_for = new_event.event_for,
             event_name = new_event.event_name,
             event_description = new_event.event_description,
@@ -68,12 +61,20 @@ def get_events(users_list: str, engine):
 
     #make query
     try:
-        select = events.select().where(
-            events.c.owner.in_(user_id_list)
-        )
+        
+        select = db.select(
+                [events, users.c.username]
+                ).where(
+                    events.c.event_for.in_(user_id_list)
+                ).where(
+                    events.c.event_for == users.c.user_id
+                )
 
         results = make_simple_query(select, engine).fetchall()
+        
+        print(results)
         return results
     except Exception as exc:
+        print(exc)
         raise HTTPException(status_code=400, detail="Error fetching users. "
                             + "Make sure database is up.") from exc

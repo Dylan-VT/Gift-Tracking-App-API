@@ -20,7 +20,6 @@ users = Table(
 events = Table(
     "events",
     metadata_obj,
-    Column('owner', Integer, primary_key=True),
     Column('event_for', Integer),
     Column('event_name', String),
     Column('event_description', String, nullable = True),
