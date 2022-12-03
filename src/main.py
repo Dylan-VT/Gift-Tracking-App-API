@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 
 #custom modules
 from db_utils.sql_utils import make_simple_query
-from db_utils.metadata import users
+from db_utils.metadata import users, events
 from class_models import user_models, event_models
 
 
@@ -92,11 +92,23 @@ def create_user(user: user_models.CreateUser):
     #make query
     try:
         make_simple_query(insert, engine)
+        #get new user user id 
+
+        #create new event for users birthday
+        new_user_query = users.select(users.c.username == user.username)
+        new_user = make_simple_query(new_user_query, engine).fetchone()
+        insert_query = events.insert().values(
+            event_for = new_user.user_id,
+            event_name = f'{new_user.display_name}\'s Birthday',
+            event_description = f'Automatically generated birthday event for {new_user.display_name}',
+            event_date = new_user.birthday
+        )
+        make_simple_query(insert_query, engine)
     except psycopg2.Error:
         print("Exception encountered at /createuser")
         return 500
 
-    return 200
+    return new_user
 
 @app.post("/addfriend")
 def add_friend_endpoint(req: user_models.AddFriend):
