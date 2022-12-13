@@ -139,5 +139,7 @@ def get_idea(user: int, event_for: int, engine):
         idea_row = make_simple_query(select, engine).fetchone()
     except Exception as exc:
         raise HTTPException(status_code=400, detail="Error fetching ideas.") from exc
-
+    
+    if idea_row is None:
+        return []
     return idea_row.ideas
