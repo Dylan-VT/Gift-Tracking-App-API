@@ -15,3 +15,9 @@ class Event(BaseModel):
     event_name: str
     event_description: Optional[str]
     event_date: date
+
+
+class GiftIdea(BaseModel):
+    user: int
+    event_for: int
+    gift_name: list[str]
