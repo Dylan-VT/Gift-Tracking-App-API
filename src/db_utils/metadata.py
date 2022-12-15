@@ -25,3 +25,11 @@ events = Table(
     Column('event_description', String, nullable = True),
     Column('event_date', Date)
 )
+
+ideas = Table(
+    "ideas",
+    metadata_obj,
+    Column('user', Integer),
+    Column('event_for', Integer),
+    Column('ideas', ARRAY(String))
+)

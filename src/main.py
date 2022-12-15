@@ -131,10 +131,14 @@ def add_event_endpoint(req: event_models.Event):
     """
     return event_requests.add_event(req, engine)
 
+@app.put('/idea/{user}/{event_for}/{gift_name}')
+def add_idea(user: int, event_for: int, gift_name: str):
+    print(gift_name)
+    return event_requests.add_idea(user, event_for, gift_name, engine)
 
-
-
-
+@app.get('/idea/{user}/{event_for}')
+def get_ideas(user: int, event_for: int):
+    return event_requests.get_idea(user, event_for, engine)
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
