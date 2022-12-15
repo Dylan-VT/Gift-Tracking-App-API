@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 
 #custom modules
 from db_utils.sql_utils import make_simple_query
-from db_utils.metadata import users, events
+from db_utils.metadata import users, events, credentials
 from class_models import user_models, event_models
 
 
@@ -64,11 +64,13 @@ def get_all_users():
 
     return result
 
-@app.get("/getuser/{username}", response_model = user_models.User)
-def read_item(username: str):
+@app.get("/getuser/{username}/{password}", response_model = user_models.User)
+def read_item(username: str, password: str):
     """
     Gets a user from the db that matches the username
     """
+    #set username to lower
+    username = username.lower()
     #create select statement
     select = users.select().where(users.c.username == username)
     #get result, fetch first item
@@ -78,6 +80,19 @@ def read_item(username: str):
         print("Error fetching user")
         return 500
 
+    #now check for pw
+    select = credentials.select().where(credentials.c.user_id == result.user_id)
+    try:
+        correct_password = make_simple_query(select, engine).fetchone()
+        print(correct_password)
+        if correct_password.password != password:
+            print("Incorrect password")
+            return 500
+    except:
+        print("Error fetching password")
+        return 500
+
+
     return result
 
 @app.post("/createuser")
@@ -85,6 +100,8 @@ def create_user(user: user_models.CreateUser):
     """
     Creates a new user and adds them to the DB
     """
+    #set username to lower
+    user.username = user.username.lower()
     #insert statement to create new user
     insert = users.insert().values(username = user.username,
                                    display_name = user.display_name,
@@ -96,7 +113,9 @@ def create_user(user: user_models.CreateUser):
 
         #create new event for users birthday
         new_user_query = users.select(users.c.username == user.username)
-        new_user = make_simple_query(new_user_query, engine).fetchone()
+        print(user.username)
+        new_user: user_models.User = make_simple_query(new_user_query, engine).fetchone()
+        print(new_user)
         insert_query = events.insert().values(
             event_for = new_user.user_id,
             event_name = f'{new_user.display_name}\'s Birthday',
@@ -105,6 +124,19 @@ def create_user(user: user_models.CreateUser):
         )
         make_simple_query(insert_query, engine)
     except psycopg2.Error:
+        print("Exception encountered at /createuser")
+        return 500
+
+    #now add password
+    insert_password = credentials.insert().values(
+        user_id = new_user.user_id,
+        password = user.password
+    )
+    try:
+        make_simple_query(insert_password, engine)
+
+    except Exception as e:
+        print(e)
         print("Exception encountered at /createuser")
         return 500
 
