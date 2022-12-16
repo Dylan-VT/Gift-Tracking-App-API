@@ -33,3 +33,10 @@ ideas = Table(
     Column('event_for', Integer),
     Column('ideas', ARRAY(String))
 )
+
+credentials = Table(
+    "credentials",
+    metadata_obj,
+    Column('user_id', Integer),
+    Column('password', String)
+)

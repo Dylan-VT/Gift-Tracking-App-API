@@ -12,6 +12,9 @@ def add_friend(new_friend_info: user_models.AddFriend, engine):
     query to create a new friend, takes the username of the original friend
     and the new friend to add
     '''
+    new_friend_info.new_friend = new_friend_info.new_friend.lower()
+    new_friend_info.username = new_friend_info.username.lower()
+
     #users cannot add themselves as friends
     if new_friend_info.username == new_friend_info.new_friend:
         return 501

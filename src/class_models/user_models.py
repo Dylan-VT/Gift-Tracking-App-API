@@ -25,6 +25,7 @@ class CreateUser(BaseModel):
     username: str
     display_name: str
     birthday: str
+    password: str
 
 class AddFriend(BaseModel):
     '''
