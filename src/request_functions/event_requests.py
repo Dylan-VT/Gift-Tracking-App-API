@@ -141,5 +141,5 @@ def get_idea(user: int, event_for: int, engine):
         raise HTTPException(status_code=400, detail="Error fetching ideas.") from exc
     
     if idea_row is None:
-        return {"ideas": []}
-    return {"ideas": idea_row.ideas}
+        return [{"ideas": []}]
+    return [{"ideas": idea_row.ideas}]
