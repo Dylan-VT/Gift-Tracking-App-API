@@ -164,9 +164,8 @@ def add_event_endpoint(req: event_models.Event):
     return event_requests.add_event(req, engine)
 
 @app.post('/idea/{user}/{event_for}/{gift_name}')
-def add_idea(user: int, event_for: int, gift_name: str):
-    print(gift_name)
-    return event_requests.add_idea(user, event_for, gift_name, engine)
+def add_idea(user: str, event_for: str, gift_name: str):
+    return event_requests.add_idea(int(user), int(event_for), gift_name, engine)
 
 @app.get('/idea/{user}/{event_for}')
 def get_ideas(user: int, event_for: int):
